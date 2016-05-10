@@ -46,3 +46,33 @@ Follow the screen prompts and you should end up with the certificate in your
 distribution. It may take a couple minutes to update.
 
 To automate the renewal process without prompts (for example, with a monthly cron), you can add the letsencrypt parameters --renew-by-default --text
+
+### Use with docker
+
+Move these lines to your `docker-compose.yml`
+
+```
+letsencrypt-s3front:
+  image: plyo/letsencrypt-s3front
+  environment:
+    - DOMAINS=first.domain.com,second.domain.com
+    - AWS_ACCESS_KEY_ID_0=<key for first domain>
+    - AWS_SECRET_ACCESS_KEY_0=<secret for first domain>
+    - BUCKET_0=<bucket name>
+    - REGION_0=<region>
+    - DISTRIBUTION_ID_0=<dist_id>
+    - EMAIL_0=<email for notifications>
+    - AWS_ACCESS_KEY_ID_1=<key for second domain>
+    - AWS_SECRET_ACCESS_KEY_1=<secret for second domain>
+    - BUCKET_1=<bucket name>
+    - REGION_1=<region>
+    - DISTRIBUTION_ID_1=<dist_id>
+    - EMAIL_1=<email>
+    - CRON_PERIOD=0 3 * * *  # 3 a.m. each night for trying to renew
+  volumes:
+    ./letsencrypt:/etc/letsencrypt
+```
+
+then run with `docker-compose up`. You can update certificates for several domains - just list them in `$DOMAINS` var
+and use ordinal suffix (like _0, _1, _2..) for other vars.
+
