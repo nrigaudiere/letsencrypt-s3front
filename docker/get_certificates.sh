@@ -23,7 +23,7 @@ do
     export AWS_SECRET_ACCESS_KEY=${!secret_key}
 
     echo "Getting a certificate for ${domain}..."
-    letsencrypt certonly --agree-tos -t -a letsencrypt-s3front:auth \
+    letsencrypt run --agree-tos -t -a letsencrypt-s3front:auth \
       --keep --expand \
       --letsencrypt-s3front:auth-s3-bucket ${!bucket} \
       --letsencrypt-s3front:auth-s3-region ${!region} \

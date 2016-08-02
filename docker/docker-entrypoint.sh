@@ -37,7 +37,6 @@ echo "Preparing crontab"
 cat <<EOF > /etc/cron.d/crontab
 SHELL=/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-RENEW_CERTIFICATES=true
 
 ${CRON_PERIOD} root /letsencrypt-s3front/get_certificates.sh &>> /var/log/cron.log
 
