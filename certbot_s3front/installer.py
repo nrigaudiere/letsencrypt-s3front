@@ -1,9 +1,10 @@
 """S3/CloudFront Let's Encrypt installer plugin."""
+
+from __future__ import print_function
+
 import os
 import sys
 import logging
-import re
-import subprocess
 
 import zope.component
 import zope.interface
@@ -11,11 +12,8 @@ import zope.interface
 import boto3
 import botocore
 
-from acme import challenges
-
-from letsencrypt import errors
-from letsencrypt import interfaces
-from letsencrypt.plugins import common
+from certbot import interfaces
+from certbot.plugins import common
 
 
 logger = logging.getLogger(__name__)
@@ -49,7 +47,11 @@ class Installer(common.Plugin):
         Upload Certificate to IAM and assign it to the CloudFront distribution
         """
         if self.config.rsa_key_size > 2048:
-            print "The maximum public key size allowed for Cloudfront is 2048 (http://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/SecureConnections.html)\n Please, use --rsa_key_size 2048 or edit your cli.ini"
+            print(
+                "The maximum public key size allowed for Cloudfront is 2048 ("
+                "https://docs.aws.amazon.com/AmazonCloudFront/latest"
+                "/DeveloperGuide/cnames-and-https-requirements.html)\n"
+                "Please, use --rsa_key_size 2048 or edit your cli.ini")
             sys.exit(1)
         client = boto3.client('iam')
         cf_client = boto3.client('cloudfront')
@@ -58,6 +60,21 @@ class Installer(common.Plugin):
         body = open(cert_path).read()
         key = open(key_path).read()
         chain = open(chain_path).read()
+        
+        # Delete old cert
+        try:
+            client.delete_server_certificate(
+                ServerCertificateName=name
+            )
+        except botocore.exceptions.ClientError as e:
+            logger.error(e)
+
+        # Rename cert to the new one
+        client.update_server_certificate(
+            ServerCertificateName=name + '-new',
+            NewServerCertificateName=name
+        )
+        
         # Upload cert to IAM
         response = client.upload_server_certificate(
             Path="/cloudfront/letsencrypt/",
@@ -85,20 +102,6 @@ class Installer(common.Plugin):
         response = cf_client.update_distribution(DistributionConfig=cf_cfg['DistributionConfig'],
                                                  Id=self.conf('cf-distribution-id'),
                                                  IfMatch=cf_cfg['ETag'])
-
-        # Delete old cert
-        try:
-            client.delete_server_certificate(
-                ServerCertificateName=name
-            )
-        except botocore.exceptions.ClientError as e:
-            logger.error(e)
-
-        # Rename cert to the new one
-        client.update_server_certificate(
-            ServerCertificateName=name + '-new',
-            NewServerCertificateName=name
-        )
 
     def enhance(self, domain, enhancement, options=None):  # pylint: disable=missing-docstring,no-self-use
         pass  # pragma: no cover

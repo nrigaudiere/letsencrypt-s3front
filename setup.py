@@ -3,13 +3,12 @@ import sys
 from distutils.core import setup
 from setuptools import find_packages
 
-version = '0.1.3'
+version = '0.2.0'
 
 install_requires = [
     'acme>=0.1.1',
-    'letsencrypt>=0.1.1',
+    'certbot>=0.9.3',
     'PyOpenSSL',
-    'pyparsing>=1.5.5',  # Python3 support; perhaps unnecessary?
     'setuptools',  # pkg_resources
     'zope.interface',
     'boto3'
@@ -26,10 +25,10 @@ docs_extras = [
 ]
 
 setup(
-    name='letsencrypt-s3front',
+    name='certbot-s3front',
     version=version,
-    description="S3/CloudFront plugin for Let's Encrypt client",
-    url='https://github.com/dlapiduz/letsencrypt-s3front',
+    description="S3/CloudFront plugin for Certbot client",
+    url='https://github.com/dlapiduz/certbot-s3front',
     author="Diego Lapiduz",
     author_email='diego@lapiduz.com',
     license='MIT',
@@ -53,11 +52,11 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=install_requires,
-    keywords = ['letsencrypt', 'cloudfront', 's3'],
+    keywords = ['certbot', 'cloudfront', 's3'],
     entry_points={
-        'letsencrypt.plugins': [
-            'auth = letsencrypt_s3front.authenticator:Authenticator',
-            'installer = letsencrypt_s3front.installer:Installer',
+        'certbot.plugins': [
+            'auth = certbot_s3front.authenticator:Authenticator',
+            'installer = certbot_s3front.installer:Installer',
         ],
     },
 )
