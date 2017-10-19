@@ -94,6 +94,7 @@ letsencrypt-s3front:
     - CRON_PERIOD=0 3 * * *  # 3 a.m. each night for trying to renew
   volumes:
     ./letsencrypt:/etc/letsencrypt
+  network_mode: "host"
 ```
 
 then run with `docker-compose up`. You can update certificates for several domains - just list them in `$DOMAINS` var
