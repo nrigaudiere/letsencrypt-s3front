@@ -46,31 +46,7 @@ The easiest way to install both the certbot client and the certbot-s3front plugi
   ```
   And then run `pip install certbot-s3front`.
 
-### How to use it
-
-To generate a certificate and install it in a CloudFront distribution:
-
-```bash
-AWS_ACCESS_KEY_ID="REPLACE_WITH_YOUR_KEY" \
-AWS_SECRET_ACCESS_KEY="REPLACE_WITH_YOUR_SECRET" \
-certbot --agree-tos -a certbot-s3front:auth \
---certbot-s3front:auth-s3-bucket REPLACE_WITH_YOUR_BUCKET_NAME \
-[ --certbot-s3front:auth-s3-region your-bucket-region-name ] #(the default is us-east-1, unless you want to set it to something else, you can delete this line) \
-[ --certbot-s3front:auth-s3-directory your-bucket-directory ] # (default is "") \
--i certbot-s3front:installer \
---certbot-s3front:installer-cf-distribution-id REPLACE_WITH_YOUR_CF_DISTRIBUTION_ID \
--d REPLACE_WITH_YOUR_DOMAIN
-```
-
-Follow the screen prompts and you should end up with the certificate in your
-distribution. It may take a couple minutes to update.
-
-
-### Automate renewal
-
-To automate the renewal process without prompts (for example, with a monthly cron), you can add the certbot parameters `--renew-by-default --text`
-
-### Use with docker
+### Docker
 
 Move these lines to your `docker-compose.yml`
 
@@ -79,24 +55,15 @@ letsencrypt-s3front:
   image: plyo/letsencrypt-s3front
   environment:
     - DOMAINS=first.domain.com,second.domain.com
-    - AWS_ACCESS_KEY_ID_0=<key for first domain>
-    - AWS_SECRET_ACCESS_KEY_0=<secret for first domain>
-    - BUCKET_0=<bucket name>
-    - REGION_0=<region>
-    - DISTRIBUTION_ID_0=<dist_id>
-    - EMAIL_0=<email for notifications>
-    - AWS_ACCESS_KEY_ID_1=<key for second domain>
-    - AWS_SECRET_ACCESS_KEY_1=<secret for second domain>
-    - BUCKET_1=<bucket name>
-    - REGION_1=<region>
-    - DISTRIBUTION_ID_1=<dist_id>
-    - EMAIL_1=<email>
-    - CRON_PERIOD=0 3 * * *  # 3 a.m. each night for trying to renew
+    - AWS_ACCESS_KEY_ID=<key for first domain>
+    - AWS_SECRET_ACCESS_KEY=<secret for first domain>
+    - BUCKET=<bucket name>
+    - REGION=<region>
+    - DISTRIBUTION_ID=<dist_id>
+    - EMAIL=<email for notifications>
   volumes:
     ./letsencrypt:/etc/letsencrypt
   network_mode: "host"
 ```
 
-then run with `docker-compose up`. You can update certificates for several domains - just list them in `$DOMAINS` var
-and use ordinal suffix (like _0, _1, _2..) for other vars.
-
+then run with `docker-compose up`. You can update certificates for several domains - just list them in `$DOMAINS`

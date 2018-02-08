@@ -1,9 +1,8 @@
 FROM python:2
 
-# Install git for letsecnrypt and cron for renewing
+# Install git for letsencrypt
 RUN apt-get update && \
     apt-get install -y \
-        cron \
         git && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
@@ -14,8 +13,6 @@ RUN git clone https://github.com/letsencrypt/letsencrypt /letsencrypt \
   && git checkout tags/v0.3.0 \
   && cd - \
   && /letsencrypt/bootstrap/debian.sh
-
-RUN touch /var/log/cron.log
 
 RUN pip install letsencrypt-s3front
 
