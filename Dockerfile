@@ -21,4 +21,4 @@ VOLUME /etc/letsencrypt
 ADD docker/* /letsencrypt-s3front/
 RUN chmod a+x /letsencrypt-s3front/*.sh
 
-CMD /letsencrypt-s3front/docker-entrypoint.sh
+CMD /letsencrypt-s3front/get_certificates.sh

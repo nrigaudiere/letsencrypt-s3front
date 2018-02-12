@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+export DOMAINS=${DOMAINS}
+
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
 if [ ! "${DOMAINS}" ]; then
   echo 'Error: empty $DOMAINS var'
   exit 1;
